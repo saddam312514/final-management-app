@@ -4,6 +4,7 @@ const mongoose=require('mongoose')
 const cors = require('cors')
 const bodyParser=require('body-parser')
 const passport=require('passport')
+const path =require('path')
 
 
 
@@ -17,6 +18,14 @@ require('./passport')(passport)
 
 app.use('/api/users', require('./routers/userRoute'))
 app.use('/api/transactions',require('./routers/transactionRoutes'))
+if(process.env.NODE_ENV === 'production'){
+    app.use(express.static('client/build'))
+    app.get('*',(req,res)=>{
+        res.sendFile(path.resolve(__dirname,'client','build','index.html'))
+
+    })
+
+}
 
 app.get('/', (req,res) => {
     res.json({
@@ -29,7 +38,7 @@ const PORT = process.env.PORT || 4000
 
 app.listen(PORT, () => {
     console.log(`SERVER IS RUNNING ON PORT ${PORT}`)
-    mongoose.connect('mongodb://localhost:27017/final-management',
+    mongoose.connect(`mongodb+srv://${process.env.dbUsername}:${process.env.dbUsername}@cluster0-nhp0s.mongodb.net/test`,
     { useNewUrlParser: true },
     
     () => {
